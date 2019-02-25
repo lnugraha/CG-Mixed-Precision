@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11   CMakeFiles/HACS.dir/main.cpp.o CMakeFiles/HACS.dir/src/libmath.cpp.o  -o ../HACS 
