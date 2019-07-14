@@ -8,7 +8,7 @@ This project compares the computation speed and performance (FLOPS) of a Conjuga
 Worked examples: <br/>
 
 <img src = "./images/CG_two_by_two_part01.png" width="40%" height="40%"><br />
-<img src = "./images/CG_two_by_two_part02.png">
+<img src = "./images/CG_two_by_two_part02.png" width="20%" height="20%">
 
 
 
