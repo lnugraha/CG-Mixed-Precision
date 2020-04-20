@@ -108,10 +108,10 @@ void dpCG::Solver( double* x, const double* b, double *p,
   double cr = sqrt(rr/bb);
   // end of initialization
 
-  unsigned int k= 0;
-  while(cr > eps){
-    laplacian_times_vector(Ap, p, 
-    SITES.site_ip, SITES.site_im, SITES.site_jp, SITES.site_jm, SITES.N);
+  unsigned int k= 0; dpLaplacianVector DPLP;
+  while (cr>eps)
+  {
+    DPLP.laplacian_times_vector(Ap, p, SITES);
     double pAp = ddot(p, Ap, SITES.N);
     double alpha = (rr/pAp);
     daxpyz(x,  x,  alpha, p, SITES.N );         //  x = x + alpha * p
@@ -124,6 +124,7 @@ void dpCG::Solver( double* x, const double* b, double *p,
     cr = sqrt(rr/bb);
     printf("    k,  |r|/|b| : %10d  %16.8E \n", k, cr ); 
   }
+  delete r; delete Ap; delete Cp;
 }
 
 
@@ -144,11 +145,10 @@ void spCG::Solver( float* x, const float* b, float *p,
   float cr = sqrt(rr/bb);          
   // end of initialization
 
-  unsigned int k = 0;
-  while (cr>eps){
-    laplacian_times_vector_single(Ap, p, 
-    SITES.site_ip, SITES.site_im, SITES.site_jp, SITES.site_jm, SITES.N);
-    
+  unsigned int k = 0; spLaplacianVector SPLP;
+  while (cr>eps)
+  {
+    SPLP.laplacian_times_vector(Ap, p, SITES);
     float pAp = sdot(p, Ap, SITES.N);
     float alpha = (rr/pAp);
     saxpyz(x, x,  alpha, p, SITES.N );        //  x = x + alpha * p
@@ -161,4 +161,5 @@ void spCG::Solver( float* x, const float* b, float *p,
     cr = sqrt(rr/bb);
     printf("    k,  |r|/|b| : %10d  %16.8E \n", k, cr ); 
   }
+  delete r; delete Ap; delete Cp;
 }
