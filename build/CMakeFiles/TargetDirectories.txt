@@ -1,3 +1,0 @@
-/home/lnugraha/Mixed-Precision-CG/build/CMakeFiles/rebuild_cache.dir
-/home/lnugraha/Mixed-Precision-CG/build/CMakeFiles/edit_cache.dir
-/home/lnugraha/Mixed-Precision-CG/build/CMakeFiles/HACS.dir
