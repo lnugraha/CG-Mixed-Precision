@@ -16,7 +16,6 @@ typedef struct SiteIndices{
     site_jp = new unsigned int[N];
     site_jm = new unsigned int[N];
   }
-
   ~SiteIndices()
   { delete site_ip; delete site_im; delete site_jp; delete site_jm; }
 #endif

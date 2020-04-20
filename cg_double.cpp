@@ -55,7 +55,16 @@ int main(int argc, char *argv[]){
   printf("=== To solve A.x = b, using CG with double precision ===\n\n");
   start = clock();   // start the clock
   
-  siteindex(site_ip, site_im, site_jp, site_jm, L);
+  SiteIndices mainSITES;
+  mainSITES.site_ip = site_ip;
+  mainSITES.site_im = site_im;
+  mainSITES.site_jp = site_jp;
+  mainSITES.site_jm = site_jm;
+  mainSITES.N       = N;
+
+
+  // siteindex(site_ip, site_im, site_jp, site_jm, L);
+  siteindex(mainSITES, L);
   // set up the indices for neighboring sites for 2d lattice
 
   for (unsigned int i=0 ; i<N ; ++i) b[i] = 0.0;
@@ -63,25 +72,25 @@ int main(int argc, char *argv[]){
   double bb = ddot(b, b, N); // <b, b>
   printf("    b is a source vector of size %d \n\n", N);
   // Set initial vector x_0 
-  for (unsigned int i=0; i<N; ++i)
-  { x[i] = 0.0; r[i] = b[i]; p[i] = r[i]; }
+  for (unsigned int i=0; i<N; ++i) { x[i] = 0.0; r[i] = b[i]; p[i] = r[i]; }
 
   double rr = ddot(r, r, N);  // <r,r>_k
   double cr = sqrt(rr/bb);    // sqrt(rr/bb)
-  unsigned int k=0;
+  unsigned int k = 0;
   printf("    k,  |r|/|b| : %10d  %16.8E \n", k, cr ); 
   
+  dpLaplacianVector DPLP;
   while (cr>eps)
   {
-    laplacian_times_vector( Ap, p, site_ip, site_im, site_jp, site_jm, N );// A.p
-    
-    double pAp = ddot(p, Ap, N);  // <p, Ap>
+    DPLP.laplacian_times_vector(Ap, p, mainSITES);
+
+    double pAp = ddot(p, Ap, mainSITES.N);  // <p, Ap>
     double alpha = (rr/pAp);
-    daxpyz(x, x,  alpha, p, N);   //  x = x + alpha * p
-    daxpyz(r, r, -alpha, Ap, N);  //  r = r - alpha * A.p
-    double tt = ddot(r, r, N);
+    daxpyz(x, x,  alpha, p, mainSITES.N);   //  x = x + alpha * p
+    daxpyz(r, r, -alpha, Ap, mainSITES.N);  //  r = r - alpha * A.p
+    double tt = ddot(r, r, mainSITES.N);
     double beta = (tt/rr);
-    daxpyz(p, r, beta, p, N);     //  p = r + beta * p
+    daxpyz(p, r, beta, p, mainSITES.N);     //  p = r + beta * p
     k++;
     if( (k % 100) == 0 )
     {
