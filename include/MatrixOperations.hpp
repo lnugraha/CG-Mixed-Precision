@@ -6,7 +6,8 @@
 #include <cmath>
 
 typedef struct SiteIndices{
-  unsigned int *site_ip, *site_im, *site_jp, *site_jm; unsigned int N;
+  unsigned int *site_ip, *site_im, *site_jp, *site_jm; 
+  unsigned int N; unsigned int L;
 #if 0
   SiteIndices(unsigned int N)
   {
@@ -34,19 +35,6 @@ void daxpyz( double* v0, double* v1, const double& c, double* v2,
 void vector_addition_dbl_sgl( double* x_dbl, const float* x_sgl, 
   const unsigned int& N );
 
-
-// TODO: delete!!!
-void laplacian_times_vector( double* Ax, const double* x, 
-  const unsigned int* site_ip, const unsigned int* site_im, 
-  const unsigned int* site_jp, const unsigned int* site_jm, 
-  const unsigned int& N );
-
-// TODO: delete!!!
-void laplacian_times_vector_single( float* Ax, const float* x, 
-  const unsigned int* site_ip, const unsigned int* site_im, 
-  const unsigned int* site_jp, const unsigned int* site_jm, 
-  const unsigned int& N );
-
 class Laplacian_Times_Vector{
   protected:
     SiteIndices SITES;
@@ -57,13 +45,13 @@ class Laplacian_Times_Vector{
 class dpLaplacianVector : public Laplacian_Times_Vector{
   public:
     void laplacian_times_vector( double* Ax, const double* x, 
-    const SiteIndices& SITES );
+    const SiteIndices& SITES, const unsigned int& limit );
 };
 
 class spLaplacianVector : public Laplacian_Times_Vector{
   public:
     void laplacian_times_vector( float* Ax, const float* x, 
-    const SiteIndices& SITES );
+    const SiteIndices& SITES, const unsigned int& limit );
 };
 
 #endif

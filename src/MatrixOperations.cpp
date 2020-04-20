@@ -28,35 +28,11 @@ void vector_addition_dbl_sgl( double* x_dbl, const float* x_sgl,
 
 // ========================================================================== //
 
-void laplacian_times_vector( double* Ax, const double* x, 
-  const unsigned int* site_ip, const unsigned int* site_im, 
-  const unsigned int* site_jp, const unsigned int* site_jm, 
-  const unsigned int& N )
-{
-  static double mass = 0.001;
-  for (unsigned int i=0; i<N; i++){
-    Ax[i] = (mass*mass-4.0) * x[i] + 
-    x[ site_ip[i] ] + x[ site_im[i] ] + x[ site_jp[i] ] + x[ site_jm[i] ];
-  }
-}
-
-void laplacian_times_vector_single( float* Ax, const float* x, 
-  const unsigned int* site_ip, const unsigned int* site_im, 
-  const unsigned int* site_jp, const unsigned int* site_jm, 
-  const unsigned int& N )
-{
-  static float mass = 0.001;
-  for (unsigned int i=0; i<N; i++){
-    Ax[i] = (mass*mass-4.0) * x[i] + 
-    x[ site_ip[i] ] + x[ site_im[i] ] + x[ site_jp[i] ] + x[ site_jm[i] ];
-  }
-}
-
 void dpLaplacianVector::laplacian_times_vector( double* Ax, const double* x, 
-  const SiteIndices& SITES)
+  const SiteIndices& SITES, const unsigned int& limit)
 {
   static double mass = 0.001;
-  for (unsigned int i=0; i<SITES.N; i++)
+  for (unsigned int i=0; i<limit; i++)
   {
     Ax[i] = (mass*mass-4.0) * x[i] + x[ SITES.site_ip[i] ] + 
     x[ SITES.site_im[i] ] + x[ SITES.site_jp[i] ] + x[ SITES.site_jm[i] ];
@@ -64,10 +40,10 @@ void dpLaplacianVector::laplacian_times_vector( double* Ax, const double* x,
 }
 
 void spLaplacianVector::laplacian_times_vector( float* Ax, const float* x, 
-  const SiteIndices& SITES)
+  const SiteIndices& SITES, const unsigned int& limit)
 {
   static float mass = 0.001;
-  for (unsigned int i=0; i<SITES.N; i++)
+  for (unsigned int i=0; i<limit; i++)
   {
     Ax[i] = (mass*mass-4.0) * x[i] + x[ SITES.site_ip[i] ] + 
     x[ SITES.site_im[i] ] + x[ SITES.site_jp[i] ] + x[ SITES.site_jm[i] ];

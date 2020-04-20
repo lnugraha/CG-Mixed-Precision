@@ -36,7 +36,7 @@ double cpu_time_used;
 #include "Laplace.hpp"
 #include "MatrixOperations.hpp"
 
-static const unsigned long long int L = 100;
+static const unsigned long long int L = 1000;
 static const unsigned long long int N = L * L; // 2-D Lattice
 static const double eps = 1.0E-06;
 
@@ -60,11 +60,11 @@ int main(int argc, char *argv[]){
   mainSITES.site_im = site_im;
   mainSITES.site_jp = site_jp;
   mainSITES.site_jm = site_jm;
-  mainSITES.N       = N;
-
-
-  // siteindex(site_ip, site_im, site_jp, site_jm, L);
-  siteindex(mainSITES, L);
+  mainSITES.N       = N; // N = L*L
+  mainSITES.L       = L;
+  
+  siteindex(mainSITES);
+  // siteindex(mainSITES, L);
   // set up the indices for neighboring sites for 2d lattice
 
   for (unsigned int i=0 ; i<N ; ++i) b[i] = 0.0;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
   dpLaplacianVector DPLP;
   while (cr>eps)
   {
-    DPLP.laplacian_times_vector(Ap, p, mainSITES);
+    DPLP.laplacian_times_vector(Ap, p, mainSITES, mainSITES.N);
 
     double pAp = ddot(p, Ap, mainSITES.N);  // <p, Ap>
     double alpha = (rr/pAp);

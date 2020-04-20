@@ -11,16 +11,12 @@
 #include <stdio.h>
 #include <iostream>
 #include <time.h>
-using namespace std;
-
-clock_t start,end;        // timing CPU 
-double cpu_time_used;
-
+using namespace std; clock_t start,end; double cpu_time_used;
 #include "Laplace.hpp"
 #include "MatrixOperations.hpp"
 #include "CGSolvers.hpp"
 
-static const unsigned int L = 100; //  lattice size: L x L
+static const unsigned int L = 1000; //  lattice size: L x L
 static const unsigned int N = L * L;      
 static const float eps_sgl = 0.5;
 static const double eps_dbl = 0.001;
@@ -38,7 +34,8 @@ int main(int argc, char *argv[]){
   mainSITES.site_im = site_im;
   mainSITES.site_jp = site_jp;
   mainSITES.site_jm = site_jm;
-  mainSITES.N = L;
+  mainSITES.N = N; // N = L*L
+  mainSITES.L = L;
 
   double* b = new double[N];
   double* x = new double[N];
@@ -54,21 +51,22 @@ int main(int argc, char *argv[]){
   double* p_dbl = new double[N];
 
   start = clock(); // start timing
-  siteindex(mainSITES, L);
+  // siteindex(mainSITES, L);
   // siteindex(site_ip, site_im, site_jp, site_jm, L);   
+  siteindex(mainSITES);
   // set up the indices for neighboring sites on a 2d lattice 
 
-  for (unsigned int i=0 ; i<N ; i++) b[i] = 0.0;
+  for (unsigned int i=0 ; i<(L*L) ; i++) b[i] = 0.0;
   b[0] = 1.0; // point source at the origin
-  printf("   b is a source vector of size %d \n",N);
+  printf("   b is a source vector of size %d \n", L*L);
   
   // Set initial vector x_0 
-  for (unsigned int i=0 ; i<N ; i++)
+  for (unsigned int i=0 ; i<(L*L) ; i++)
   { x[i] = 0.0; r[i] = b[i]; p_sgl[i] = (float) r[i]; p_dbl[i] = r[i]; }
 
-  double bb = ddot(b, b, N);  // <b,b>
-  double rr = ddot(r, r, N);  // <r,r>
-  double cr = sqrt(rr/bb);    // |r|/|b|
+  double bb = ddot(b, b, L*L);  // <b,b>
+  double rr = ddot(r, r, L*L);  // <r,r>
+  double cr = sqrt(rr/bb);      // |r|/|b|
   printf("=== CG with Mixed Precision ===\n");
   int iteration = 0;
   
@@ -84,18 +82,19 @@ int main(int argc, char *argv[]){
     for(unsigned int i=0; i<N; i++) p_dbl[i] = r_dbl[i];   // defect correction
     
     // Case 1: Single Precision -- Invoke using enumerate or conditional
-    cg_single(x_sgl, r_sgl, p_sgl, site_ip, site_im, site_jp, site_jm, N, eps_sgl);
+    spCG SinglePrecision;
+    SinglePrecision.Solver(x_sgl, r_sgl, p_sgl, mainSITES, eps_sgl);
     vector_addition_dbl_sgl(x, x_sgl, N);
 
     // Case 2: Double Precision -- Invoke using enumerate or conditional
-    // cg_double(x_dbl, r_dbl, p_dbl, site_ip, site_im, site_jp, site_jm, N, eps_dbl);
+    // dpCG DoublePrecision;
+    // DoublePrecision.Solver(x_dbl, r_dbl, p_dbl, mainSITES, eps_dbl);
     // daxpyz(x, x, 1.0, x_dbl, N);              //  x = x + x_dbl
     
     // Gain double precision only
-    // laplacian_times_vector(Ax, x, site_ip, site_im, site_jp, site_jm, L);
-    DPLP.laplacian_times_vector(Ax, x, mainSITES);
-
+    DPLP.laplacian_times_vector(Ax, x, mainSITES, mainSITES.L);
     daxpyz(r, b, -1.0, Ax, N);               //  r = b - A.x
+    
     rr = ddot(r, r, N);
     cr = sqrt(rr/bb);                        //  |r|/|b|
     iteration++;
